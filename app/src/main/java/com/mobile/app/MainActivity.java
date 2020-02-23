@@ -1,35 +1,59 @@
 package com.mobile.app;
 
-import androidx.appcompat.app.AppCompatActivity;
-
-import android.media.MediaPlayer;
+import android.app.Activity;
+import android.content.ComponentName;
+import android.content.Context;
+import android.content.Intent;
+import android.content.ServiceConnection;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.view.View;
-import android.widget.Button;
 
-import com.mobile.app.R;
-
-public class MainActivity extends AppCompatActivity {
-
-    MediaPlayer player;
-    Button playBtn;
+public class MainActivity extends Activity {
+    MusicService mService;
+    boolean bound = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-        playBtn = findViewById(R.id.playbtn);
-        player = MediaPlayer.create(this, R.raw.sway);
     }
 
-    public void playbtnClick(View v) {
-        if (!player.isPlaying()) {
-            player.start();
-            playBtn.setBackgroundResource(android.R.drawable.ic_media_pause);
-        }else{
-            player.pause();
-            playBtn.setBackgroundResource(android.R.drawable.ic_media_play);
+    @Override
+    protected void onStart(){
+        super.onStart();
+        Intent musicServiceIntent = new Intent(this, MusicService.class);
+        startService(musicServiceIntent);
+        bindService(musicServiceIntent,connection, Context.BIND_AUTO_CREATE);
+
+    }
+
+    private ServiceConnection connection = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder service) {
+            MusicService.MusicBinder binder = (MusicService.MusicBinder)service;
+            mService = binder.getService();
+            bound = true;
         }
+
+        @Override
+        public void onServiceDisconnected(ComponentName name) {
+            bound = false;
+        }
+    };
+
+    public void playbtnClick(View v) {
+        if(!bound){
+            Intent musicServiceIntent = new Intent(this, MusicService.class);
+            bindService(musicServiceIntent,connection, Context.BIND_AUTO_CREATE);
+        }
+        if(!mService.isPlaying()) {
+            mService.play();
+            v.setBackgroundResource(android.R.drawable.ic_media_pause);
+        }else{
+            mService.pause();
+            v.setBackgroundResource(android.R.drawable.ic_media_play);
+        }
+
     }
 }
