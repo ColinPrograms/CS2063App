@@ -10,6 +10,7 @@ import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageButton;
 
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -45,7 +46,14 @@ public class CreatePlaylist extends Activity {
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
-
+        ImageButton savePlaylist = findViewById(R.id.savePlaylist);
+        savePlaylist.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                intent = new Intent(CreatePlaylist.this, TagSelectActivity.class);
+                startActivity(intent);
+            }
+        });
 
         addSongs.setOnClickListener(new View.OnClickListener(){
             @Override
