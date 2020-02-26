@@ -42,6 +42,11 @@ public class MainActivity extends Activity {
         }
     };
 
+    public void playlistsBtnClick(View v){
+        Intent toPlaylists = new Intent(this, CreatePlaylist.class);
+        startActivity(toPlaylists);
+    }
+
     public void playbtnClick(View v) {
         if(!bound){
             Intent musicServiceIntent = new Intent(this, MusicService.class);
