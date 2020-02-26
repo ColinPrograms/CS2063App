@@ -3,6 +3,7 @@ package com.mobile.app;
 import android.app.Activity;
 import android.content.ClipData;
 import android.content.Intent;
+import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -32,21 +33,43 @@ public class CreatePlaylist extends Activity {
 
     @Override
     protected void onActivityResult(int requestCode,int resultCode, Intent data){
-        final int takeFlags = Intent.FLAG_GRANT_READ_URI_PERMISSION;
-        Uri uri = data.getData();
-        if(uri != null){
-            try{
-                getContentResolver().takePersistableUriPermission(uri,takeFlags);
-            }catch(Exception e) {
-                Log.v("bork", "Exception: " + e.getMessage());
-            }
-            Log.v("CreatePlaylist",uri.toString() + "");
-        }else{
-            ClipData clipdata = data.getClipData();
-            for(int i = 0;i<clipdata.getItemCount();i++){
-                Log.v("CreatePlaylist",clipdata.getItemAt(i).getUri() + "");
+        if (resultCode == RESULT_OK) {
+            final int takeFlags = Intent.FLAG_GRANT_READ_URI_PERMISSION;
+            Uri uri = data.getData();
+            if (uri != null) {
+                try {
+                    getContentResolver().takePersistableUriPermission(uri, takeFlags);
+                } catch (Exception e) {
+                    Log.v("bork", "Exception: " + e.getMessage());
+                }
+                Cursor cursor = getContentResolver().query(uri, null, null, null, null);
+
+                int displayName2 = cursor.getColumnIndex(MediaStore.Audio.Media.DISPLAY_NAME);
+                if(cursor != null && cursor.moveToFirst()){
+                    Log.v("CreatePlaylist", cursor.getColumnIndex(MediaStore.Audio.Media.DISPLAY_NAME) + "");
+                    Log.v("CreatePlaylist", cursor.getColumnName(displayName2) + "");
+                    Log.v("CreatePlaylist", cursor.getString(displayName2) + "");
+                }
+                String selection = MediaStore.Audio.Media.DISPLAY_NAME+"=?";
+                String[] selectionArgs = new String[1];
+                selectionArgs[0] = cursor.getString(displayName2);
+//                Log.v("CreatePlaylist", selectionArgs[0] + "");
+                Cursor cursor2 = getContentResolver().query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, null, selection, selectionArgs, null);
+                if(cursor2 != null && cursor2.moveToFirst()){
+                    int displayName = cursor2.getColumnIndex(MediaStore.Audio.Media.DISPLAY_NAME);
+                    Log.v("CreatePlaylist", cursor2.getColumnIndex(MediaStore.Audio.Media.DISPLAY_NAME) + "");
+                    Log.v("CreatePlaylist", cursor2.getColumnName(displayName) + "");
+                    Log.v("CreatePlaylist", cursor2.getString(displayName) + "");
+                }
+
+                Log.v("CreatePlaylist", uri.toString() + "");
+
+            } else {
+                ClipData clipdata = data.getClipData();
+                for (int i = 0; i < clipdata.getItemCount(); i++) {
+                    Log.v("CreatePlaylist", clipdata.getItemAt(i).getUri() + "");
+                }
             }
         }
-
     }
 }
