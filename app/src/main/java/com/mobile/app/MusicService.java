@@ -2,13 +2,16 @@ package com.mobile.app;
 
 import android.app.Service;
 import android.content.Intent;
+import android.database.Cursor;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Binder;
 import android.os.IBinder;
 import java.io.IOException;
+import java.util.Random;
 
 public class MusicService extends Service {
+    DatabaseHelper mydb = new DatabaseHelper(this);
 
     private IBinder binder = new MusicBinder();
 
@@ -37,8 +40,14 @@ public class MusicService extends Service {
     }
 
     public void play(){
+        Cursor cursor = mydb.getTableRows();
         if(!playing){
-            Uri uri = Uri.parse("content://com.android.externalstorage.documents/document/1D10-0C16%3AMusic%2FMachine%20Head%20-%20Unto%20The%20Locust%20(2011)%20%5BSpecial%20Edition%5D%20%5Bmp3%40256%5D%2F01-machine_head-i_am_hell_(sonata_in_c).mp3");
+            int size = cursor.getCount();
+            Random rand = new Random();
+            size = rand.nextInt(size);
+            cursor.moveToPosition(size);
+            String uriS = cursor.getString(3);
+            Uri uri = Uri.parse(uriS);
             try{
                 player.setDataSource(this,uri);
                 player.prepareAsync();

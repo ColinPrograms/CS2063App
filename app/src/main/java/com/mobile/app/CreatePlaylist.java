@@ -11,15 +11,41 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
+import java.util.ArrayList;
+
 public class CreatePlaylist extends Activity {
     Button addSongs;
     Intent intent;
+    DatabaseHelper mydb;
+    private ArrayList<String> titles = new ArrayList<>();
+    private ArrayList<String> artists = new ArrayList<>();
+    RecyclerView recyclerView;
+    RecyclerViewAdapter adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.create_playlist);
         addSongs = findViewById(R.id.addSongsBtn);
+        mydb = new DatabaseHelper(this);
+        Cursor cursor = mydb.getTableRows();
+        if(cursor != null && cursor.moveToFirst()){
+            titles.add(cursor.getString(1));
+            artists.add(cursor.getString(2));
+            while(cursor.moveToNext()){
+                titles.add(cursor.getString(1));
+                artists.add(cursor.getString(2));
+            }
+        }
+        recyclerView = findViewById(R.id.recviewcreate);
+        adapter = new RecyclerViewAdapter(titles,artists,this);
+        recyclerView.setAdapter(adapter);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+
+
 
         addSongs.setOnClickListener(new View.OnClickListener(){
             @Override
@@ -42,33 +68,36 @@ public class CreatePlaylist extends Activity {
                 } catch (Exception e) {
                     Log.v("bork", "Exception: " + e.getMessage());
                 }
-                Cursor cursor = getContentResolver().query(uri, null, null, null, null);
-
-                int displayName2 = cursor.getColumnIndex(MediaStore.Audio.Media.DISPLAY_NAME);
-                if(cursor != null && cursor.moveToFirst()){
-                    Log.v("CreatePlaylist", cursor.getColumnIndex(MediaStore.Audio.Media.DISPLAY_NAME) + "");
-                    Log.v("CreatePlaylist", cursor.getColumnName(displayName2) + "");
-                    Log.v("CreatePlaylist", cursor.getString(displayName2) + "");
-                }
-                String selection = MediaStore.Audio.Media.DISPLAY_NAME+"=?";
-                String[] selectionArgs = new String[1];
-                selectionArgs[0] = cursor.getString(displayName2);
-//                Log.v("CreatePlaylist", selectionArgs[0] + "");
-                Cursor cursor2 = getContentResolver().query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, null, selection, selectionArgs, null);
-                if(cursor2 != null && cursor2.moveToFirst()){
-                    int displayName = cursor2.getColumnIndex(MediaStore.Audio.Media.DISPLAY_NAME);
-                    Log.v("CreatePlaylist", cursor2.getColumnIndex(MediaStore.Audio.Media.DISPLAY_NAME) + "");
-                    Log.v("CreatePlaylist", cursor2.getColumnName(displayName) + "");
-                    Log.v("CreatePlaylist", cursor2.getString(displayName) + "");
-                }
-
-                Log.v("CreatePlaylist", uri.toString() + "");
-
+                addSong(uri);
             } else {
                 ClipData clipdata = data.getClipData();
                 for (int i = 0; i < clipdata.getItemCount(); i++) {
-                    Log.v("CreatePlaylist", clipdata.getItemAt(i).getUri() + "");
+                    addSong(clipdata.getItemAt(i).getUri());
                 }
+            }
+        }
+    }
+
+    public void addSong(Uri uri){
+        Cursor cursor = getContentResolver().query(uri, null, null, null, null);
+        int displayName2 = 0;
+        if(cursor.moveToFirst()){
+            displayName2 = cursor.getColumnIndex(MediaStore.Audio.Media.DISPLAY_NAME);
+        }
+        String selection = MediaStore.Audio.Media.DISPLAY_NAME+"=?";
+        String[] selectionArgs = new String[1];
+        selectionArgs[0] = cursor.getString(displayName2);
+        String[] projection = new String[]{MediaStore.Audio.Media.DISPLAY_NAME,MediaStore.Audio.Media.TITLE,MediaStore.Audio.Media.ARTIST};
+        Cursor cursor2 = getContentResolver().query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, projection, selection, selectionArgs, null);
+        if(cursor2 != null && cursor2.moveToFirst()){
+            boolean isInserted = mydb.insertSong(cursor2.getString(cursor2.getColumnIndex(MediaStore.Audio.Media.TITLE)),cursor2.getString(cursor2.getColumnIndex(MediaStore.Audio.Media.ARTIST)),uri.toString());
+            if(isInserted){
+                Log.v("create: ","inserted");
+                titles.add(cursor2.getString(cursor2.getColumnIndex(MediaStore.Audio.Media.TITLE)));
+                artists.add(cursor2.getString(cursor2.getColumnIndex(MediaStore.Audio.Media.ARTIST)));
+                recyclerView.setAdapter(adapter);
+            }else{
+                Log.v("create: ","not inserted");
             }
         }
     }

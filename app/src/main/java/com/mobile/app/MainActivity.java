@@ -12,6 +12,7 @@ import android.view.View;
 public class MainActivity extends Activity {
     MusicService mService;
     boolean bound = false;
+    DatabaseHelper mydb;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
