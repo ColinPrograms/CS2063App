@@ -14,20 +14,29 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.util.ArrayList;
 
 public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapter.ViewHolder>{
-    private ArrayList<String> titles = new ArrayList<>();
-    private ArrayList<String> artists = new ArrayList<>();
+    private ArrayList<String> titles;
+    private ArrayList<String> artists;
     private Context context;
+    private String type;
 
-    public RecyclerViewAdapter(ArrayList<String> titlesIN,ArrayList<String> artistsIN,Context contextIN){
+    public RecyclerViewAdapter(ArrayList<String> titlesIN,ArrayList<String> artistsIN,Context contextIN,String typeIn){
         titles = titlesIN;
         artists = artistsIN;
         context = contextIN;
+        type = typeIn;
     }
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.song_layoutitem,parent,false);
-        ViewHolder holder = new ViewHolder(view);
+        View view;
+        ViewHolder holder;
+        if(type.equals("songs")){
+            view = LayoutInflater.from(parent.getContext()).inflate(R.layout.song_layoutitem,parent,false);
+            holder = new ViewHolder(view,"songs");
+        }else{
+            view = LayoutInflater.from(parent.getContext()).inflate(R.layout.playlist_layoutitem,parent,false);
+            holder = new ViewHolder(view,"playlists");
+        }
         return holder;
     }
 
@@ -44,15 +53,19 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
-
         TextView title;
         TextView artist;
+        TextView playlistName;
         ConstraintLayout parentLayout;
-        public ViewHolder(View itemView){
-            super(itemView);
-            title = itemView.findViewById(R.id.song_nametxt);
-            artist = itemView.findViewById(R.id.song_artisttxt);
-            parentLayout = itemView.findViewById(R.id.constlayout);
+        public ViewHolder(View itemView,String itemType){
+                super(itemView);
+                if(itemType.equals("songs")) {
+                    title = itemView.findViewById(R.id.song_nametxt);
+                    artist = itemView.findViewById(R.id.song_artisttxt);
+                }else{
+                    playlistName = itemView.findViewById(R.id.playlist_nametxt);
+                }
+                parentLayout = itemView.findViewById(R.id.constlayout);
         }
 
     }

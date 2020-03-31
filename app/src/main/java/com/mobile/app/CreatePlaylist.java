@@ -32,7 +32,7 @@ public class CreatePlaylist extends Activity {
         setContentView(R.layout.create_playlist);
         addSongs = findViewById(R.id.addSongsBtn);
         mydb = new DatabaseHelper(this);
-        Cursor cursor = mydb.getTableRows();
+        Cursor cursor = mydb.getTableRows("songs_table");
         if(cursor != null && cursor.moveToFirst()){
             titles.add(cursor.getString(1));
             artists.add(cursor.getString(2));
@@ -42,7 +42,7 @@ public class CreatePlaylist extends Activity {
             }
         }
         recyclerView = findViewById(R.id.recviewcreate);
-        adapter = new RecyclerViewAdapter(titles,artists,this);
+        adapter = new RecyclerViewAdapter(titles,artists,this,"songs");
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 

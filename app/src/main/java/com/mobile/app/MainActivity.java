@@ -44,7 +44,7 @@ public class MainActivity extends Activity {
     };
 
     public void playlistsBtnClick(View v){
-        Intent toPlaylists = new Intent(this, CreatePlaylist.class);
+        Intent toPlaylists = new Intent(this, PlaylistsActivity.class);
         startActivity(toPlaylists);
     }
 

@@ -38,6 +38,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".PlaylistsActivity" />
         <activity android:name=".CreatePlaylist" />
         <activity android:name=".TagSelectActivity" />
         <service android:name=".MusicService" />
