@@ -25,7 +25,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        db.execSQL("create table " + PLAYLISTS + " (ID INTEGER PRIMARY KEY AUTOINCREMENT, Title TEXT, Area area)");
+        db.execSQL("create table " + PLAYLISTS + " (ID INTEGER PRIMARY KEY AUTOINCREMENT, Title TEXT, Area TEXT)");
     }
 
     @Override
@@ -64,6 +64,14 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             db.update(PLAYLISTS,values,"Title = ?",c);
             return 1;
         }
+    }
+
+    public void changePlaylistLocation(String playlistName, String location){
+        SQLiteDatabase db = this.getWritableDatabase();
+        String b[] = {playlistName};
+        ContentValues values = new ContentValues();
+        values.put("Area",location);
+        db.update(PLAYLISTS,values,"Title = ?",b);
     }
 
     public boolean insertSong(String title, String artist, String uri, String tableName){
