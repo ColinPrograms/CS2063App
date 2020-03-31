@@ -7,6 +7,23 @@
     android:layout_height="match_parent"
     android:layout_weight="0">
 
+    <EditText
+        android:id="@+id/playlistName"
+        android:layout_width="0dp"
+        android:layout_height="36dp"
+        android:background="#2196F3"
+        android:ems="10"
+        android:inputType="textPersonName"
+        android:text="Default"
+        android:textAlignment="center"
+        android:textSize="24sp"
+        android:singleLine="true"
+        android:imeOptions="actionDone"
+        app:layout_constraintBottom_toTopOf="@+id/addSongsBtn"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
     <Button
         android:id="@+id/addSongsBtn"
         android:layout_width="0dp"
@@ -15,9 +32,10 @@
         android:scrollbarAlwaysDrawVerticalTrack="true"
         android:scrollbars="vertical"
         android:text="Add Songs"
+        app:layout_constraintBottom_toTopOf="@+id/recviewcreate"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@+id/playlistName" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recviewcreate"

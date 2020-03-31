@@ -40,7 +40,7 @@ public class MusicService extends Service {
     }
 
     public void play(){
-        Cursor cursor = mydb.getTableRows();
+        Cursor cursor = mydb.getTableRows("playlist1");
         if(!playing){
             int size = cursor.getCount();
             Random rand = new Random();

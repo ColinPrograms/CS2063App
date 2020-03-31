@@ -1,23 +1,30 @@
 package com.mobile.app;
 
+import android.Manifest;
 import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.view.View;
 
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+
 public class MainActivity extends Activity {
     MusicService mService;
     boolean bound = false;
-    DatabaseHelper mydb;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        if(ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED){
+            ActivityCompat.requestPermissions(this,new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},1);
+        }
     }
 
     @Override
@@ -49,16 +56,20 @@ public class MainActivity extends Activity {
     }
 
     public void playbtnClick(View v) {
-        if(!bound){
-            Intent musicServiceIntent = new Intent(this, MusicService.class);
-            bindService(musicServiceIntent,connection, Context.BIND_AUTO_CREATE);
-        }
-        if(!mService.isPlaying()) {
-            mService.play();
-            v.setBackgroundResource(android.R.drawable.ic_media_pause);
+        if(ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED){
+            if(!bound){
+                Intent musicServiceIntent = new Intent(this, MusicService.class);
+                bindService(musicServiceIntent,connection, Context.BIND_AUTO_CREATE);
+            }
+            if(!mService.isPlaying()) {
+                mService.play();
+                v.setBackgroundResource(android.R.drawable.ic_media_pause);
+            }else{
+                mService.pause();
+                v.setBackgroundResource(android.R.drawable.ic_media_play);
+            }
         }else{
-            mService.pause();
-            v.setBackgroundResource(android.R.drawable.ic_media_play);
+            ActivityCompat.requestPermissions(this,new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},1);
         }
 
     }
