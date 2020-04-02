@@ -17,6 +17,7 @@
         android:orientation="horizontal"
         app:layout_constraintBottom_toTopOf="@+id/playlists_title_textview"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
@@ -30,7 +31,9 @@
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/const1"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="match_parent"
+            tools:layout_editor_absoluteX="107dp"
+            tools:layout_editor_absoluteY="7dp">
 
             <TextView
                 android:id="@+id/textView3"
@@ -53,11 +56,12 @@
         android:layout_height="wrap_content"
         android:background="@drawable/textview_background"
         android:text="Playlists"
-        android:textColor="#FFFFFF"
         android:textAlignment="center"
+        android:textColor="#FFFFFF"
         android:textSize="24sp"
         app:layout_constraintBottom_toTopOf="@+id/playlist_recyclerView"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/createplaylist_linearlayout" />
 

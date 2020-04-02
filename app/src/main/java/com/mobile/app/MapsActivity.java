@@ -25,24 +25,21 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private GoogleMap mMap;
     private Circle mCircle;
     private Marker mMarker;
+    private ImageButton mapConfirm;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+
         setContentView(R.layout.activity_maps);
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
-        /*
-        FloatingActionButton fab = findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
 
-            }
-        });
-        **/
+
+
 
     }
 
@@ -60,6 +57,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     public void onMapReady(GoogleMap googleMap) {
         Intent intent = getIntent();
         mMap = googleMap;
+        mapConfirm = findViewById(R.id.mapConfirm);
         mMap.setOnMarkerDragListener(this);
 
         // Add a marker in Sydney and move the camera
@@ -91,7 +89,21 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             }
         });
 
+        mapConfirm.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent returnIntent = new Intent();
+                returnIntent.putExtra("lat", Double.toString(mMarker.getPosition().latitude));
+                returnIntent.putExtra("lng", Double.toString(mMarker.getPosition().longitude));
+                returnIntent.putExtra("rad", Double.toString(mCircle.getRadius()));
+                setResult(RESULT_OK, returnIntent);
+                finish();
+            }
+        });
+
+
     }
+
 
 
     @Override

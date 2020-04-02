@@ -41,6 +41,12 @@ public class CreatePlaylist extends Activity {
     String playlistName;
     EditText playlistTxt;
 
+    private String lng;
+    private String lat;
+    private String rad;
+
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -70,8 +76,8 @@ public class CreatePlaylist extends Activity {
         savePlaylist.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                intent = new Intent(CreatePlaylist.this, TagSelectActivity.class);
-                startActivity(intent);
+                intent = new Intent(CreatePlaylist.this, MapsActivity.class);
+                startActivityForResult(intent, 2);
             }
         });
 
@@ -157,11 +163,14 @@ public class CreatePlaylist extends Activity {
         }
         imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
     }
+
+
     @Override
     public void onBackPressed(){
         Intent intent = new Intent(CreatePlaylist.this,PlaylistsActivity.class);
         startActivity(intent);
     }
+
 
     private class SongsAdapter extends RecyclerView.Adapter<SongsAdapter.ViewHolder> {
         private ArrayList<String> songTitles;
@@ -200,7 +209,7 @@ public class CreatePlaylist extends Activity {
 
     @Override
     protected void onActivityResult(int requestCode,int resultCode, Intent data){
-        if (resultCode == RESULT_OK) {
+        if (resultCode == RESULT_OK && requestCode == 1) {
             final int takeFlags = Intent.FLAG_GRANT_READ_URI_PERMISSION;
             Uri uri = data.getData();
             if (uri != null) {
@@ -216,6 +225,14 @@ public class CreatePlaylist extends Activity {
                     addSong(clipdata.getItemAt(i).getUri());
                 }
             }
+        }
+        else if (resultCode == RESULT_OK && requestCode == 2) {
+            lat = data.getStringExtra("lat");
+            lng = data.getStringExtra("lng");
+            rad = data.getStringExtra("rad");
+
+            Log.d("Result", lat + lng + rad);
+
         }
     }
 
