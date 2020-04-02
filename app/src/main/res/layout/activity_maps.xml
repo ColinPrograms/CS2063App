@@ -18,29 +18,36 @@
 
     <ImageButton
         android:id="@+id/radIncrease"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:src="@android:drawable/ic_menu_add"
+        android:background="@drawable/button_background"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:src="@drawable/iconfinder_icon_plus_round"
         android:layout_gravity="bottom|start"
-        android:layout_marginBottom="60dp"
+        android:layout_marginBottom="70dp"
+        android:scaleType="centerCrop"
         android:layout_marginLeft="16dp"/>
 
     <ImageButton
         android:id="@+id/radDecrease"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:src="@android:drawable/ic_menu_add"
+        android:background="@drawable/button_background"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:src="@drawable/iconfinder_icon_minus_round"
+        android:scaleType="centerCrop"
         android:layout_gravity="bottom|start"
         android:layout_marginBottom="16dp"
         android:layout_marginLeft="16dp"/>
 
     <ImageButton
         android:id="@+id/mapConfirm"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:background="@drawable/button_background"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
         android:layout_gravity="bottom|end"
         android:layout_marginLeft="16dp"
         android:layout_marginRight="16dp"
-        android:background="@android:drawable/ic_menu_save" />
+        android:layout_marginBottom="16dp"
+        android:scaleType="centerCrop"
+        android:src="@drawable/iconfinder_check_square" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

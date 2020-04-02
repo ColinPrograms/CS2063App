@@ -5,12 +5,14 @@
     android:id="@+id/activity_playlists_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/colorBackground"
     android:orientation="vertical">
 
     <LinearLayout
         android:id="@+id/createplaylist_linearlayout"
         android:layout_width="0dp"
         android:layout_height="100dp"
+        android:background="@drawable/button_background"
         android:onClick="createPlaylistClick"
         android:orientation="horizontal"
         app:layout_constraintBottom_toTopOf="@+id/playlists_title_textview"
@@ -49,9 +51,9 @@
         android:id="@+id/playlists_title_textview"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:background="#2196F3"
-        android:backgroundTint="#2196F3"
+        android:background="@drawable/textview_background"
         android:text="Playlists"
+        android:textColor="#FFFFFF"
         android:textAlignment="center"
         android:textSize="24sp"
         app:layout_constraintBottom_toTopOf="@+id/playlist_recyclerView"
