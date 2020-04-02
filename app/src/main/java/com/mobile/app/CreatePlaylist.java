@@ -114,6 +114,9 @@ public class CreatePlaylist extends Activity {
                         }
                     }
                 }
+                if (keyCode == KeyEvent.KEYCODE_BACK) {
+                    onBackPressed();
+                }
                 return true;
             }
         });
