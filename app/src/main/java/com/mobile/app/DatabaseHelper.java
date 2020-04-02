@@ -92,4 +92,16 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         Cursor cursor = db.rawQuery("select * from "+ tableName,null);
     return cursor;
     }
+
+    public String getPlaylistLocation(String playlistName){
+        SQLiteDatabase db = this.getWritableDatabase();
+        String b[] = {playlistName};
+        Cursor cursor = db.query(PLAYLISTS,null ,"Title = ?",b,null,null,null);
+        if(cursor != null && cursor.moveToFirst()){
+            return cursor.getString(2);
+        }else{
+            return "failed to find";
+        }
+
+    }
 }
