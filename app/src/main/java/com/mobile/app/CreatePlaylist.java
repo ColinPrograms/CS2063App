@@ -77,6 +77,19 @@ public class CreatePlaylist extends Activity {
             @Override
             public void onClick(View v) {
                 intent = new Intent(CreatePlaylist.this, MapsActivity.class);
+                if(mydb.getPlaylistLocation(playlistName) ==  null){
+                   intent.putExtra("hasLocation", false);
+                   Log.d("mapOpen", "nothing in db");
+                    //Log.d("mapOpen", mydb.getPlaylistLocation(playlistName));
+                }
+                else{
+                    //PASS CURRENT
+                    intent.putExtra("hasLocation", true);
+                    intent.putExtra("location", mydb.getPlaylistLocation(playlistName));
+                    Log.d("mapOpen", "something in db");
+                    Log.d("mapOpen", mydb.getPlaylistLocation(playlistName));
+                }
+
                 startActivityForResult(intent, 2);
             }
         });
@@ -234,6 +247,7 @@ public class CreatePlaylist extends Activity {
             lng = data.getStringExtra("lng");
             rad = data.getStringExtra("rad");
 
+            mydb.changePlaylistLocation(playlistName,lat + " " + lng + " " + rad);
             Log.d("Result", lat + lng + rad);
 
         }
@@ -269,6 +283,7 @@ public class CreatePlaylist extends Activity {
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT, MediaStore.Audio.Media.EXTERNAL_CONTENT_URI);
                     intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
+
                     startActivityForResult(intent, 1);
                 }
             }

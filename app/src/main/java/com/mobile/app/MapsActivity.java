@@ -26,10 +26,17 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private Circle mCircle;
     private Marker mMarker;
     private ImageButton mapConfirm;
+    private Bundle bundle;
+    private boolean hasLocation;
+    private String passedLocation;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        bundle = getIntent().getExtras();
+        hasLocation = bundle.getBoolean("hasLocation");
+        passedLocation = bundle.getString("location");
 
 
         setContentView(R.layout.activity_maps);
@@ -61,16 +68,37 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mMap.setOnMarkerDragListener(this);
 
         // Add a marker in Sydney and move the camera
-        LatLng selection = new LatLng(45.966425, -66.645813);
+        Color translucentRed = Color.valueOf(0xffff0000);
+        LatLng selection;
+
+        if(hasLocation){
+            String[] circleLocation = passedLocation.split(" ");
+
+            selection = new LatLng(Double.valueOf(circleLocation[0]), Double.valueOf(circleLocation[1]));
+
+
+
+
+            mCircle = mMap.addCircle(new CircleOptions()
+                    .center(selection)
+                    .radius(Double.valueOf(circleLocation[2]))
+                    .strokeColor(Color.RED)
+                    .fillColor(Color.argb(70,255,0,0)));
+        }
+        else{
+
+            selection = new LatLng(43.8375, -66.1174);
+            mCircle = mMap.addCircle(new CircleOptions()
+                    .center(selection)
+                    .radius(50)
+                    .strokeColor(Color.RED)
+                    .fillColor(Color.argb(70,255,0,0)));
+        }
+
         mMarker = mMap.addMarker(new MarkerOptions().position(selection).title("Center").draggable(true));
         mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(selection, 18));
         mMap.setMaxZoomPreference(22);
-        Color translucentRed = Color.valueOf(0xffff0000);
-        mCircle = mMap.addCircle(new CircleOptions()
-                .center(selection)
-                .radius(50)
-                .strokeColor(Color.RED)
-                .fillColor(Color.argb(70,255,0,0)));
+
 
         ImageButton mImageButtonIncrease = findViewById(R.id.radIncrease);
         mImageButtonIncrease.setOnClickListener(new View.OnClickListener(){

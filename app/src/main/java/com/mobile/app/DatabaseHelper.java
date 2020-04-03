@@ -98,9 +98,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         String b[] = {playlistName};
         Cursor cursor = db.query(PLAYLISTS,null ,"Title = ?",b,null,null,null);
         if(cursor != null && cursor.moveToFirst()){
+
             return cursor.getString(2);
         }else{
-            return "failed to find";
+            return null;
         }
 
     }
