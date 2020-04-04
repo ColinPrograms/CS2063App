@@ -68,7 +68,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mMap.setOnMarkerDragListener(this);
 
         // Add a marker in Sydney and move the camera
-        Color translucentRed = Color.valueOf(0xffff0000);
         LatLng selection;
 
         if(hasLocation){
