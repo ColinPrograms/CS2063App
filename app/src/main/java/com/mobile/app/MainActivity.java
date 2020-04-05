@@ -2,6 +2,8 @@ package com.mobile.app;
 
 import android.Manifest;
 import android.app.Activity;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.app.Service;
 import android.content.ComponentName;
 import android.content.Context;
@@ -12,6 +14,7 @@ import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.view.View;
@@ -28,6 +31,7 @@ public class MainActivity extends Activity implements LocationListener {
     boolean isGpsLocation;
     Location loc;
     boolean isNetworklocation;
+    LocationHelper locationHelper;
 
 
     private static final int PERMISSION_CODE = 101;
@@ -37,19 +41,29 @@ public class MainActivity extends Activity implements LocationListener {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        createNotificationChannel();
+        locationHelper = new LocationHelper(this);
         if(ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED){
             ActivityCompat.requestPermissions(this,new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},1);
         }
         if(!checkPermission()){
             requestPermission();
         }
+
+
     }
 
     @Override
     protected void onStart(){
         super.onStart();
         Intent musicServiceIntent = new Intent(this, MusicService.class);
-        startService(musicServiceIntent);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            startForegroundService(musicServiceIntent);
+        } else {
+            startService(musicServiceIntent);
+        }
+
         bindService(musicServiceIntent,connection, Context.BIND_AUTO_CREATE);
 
     }
@@ -100,8 +114,8 @@ public class MainActivity extends Activity implements LocationListener {
 
 
         if(checkPermission()){
-            getLocation();
-            Toast.makeText(this, loc.getLatitude() + " " + loc.getLongitude(), Toast.LENGTH_LONG).show();
+           // locationHelper.getLocation();
+            Toast.makeText(this, locationHelper.getLocation().getLatitude() + " " + locationHelper.getLocation().getLongitude(), Toast.LENGTH_LONG).show();
         }
     }
 
@@ -207,4 +221,21 @@ public class MainActivity extends Activity implements LocationListener {
     public void onProviderDisabled(String provider) {
 
     }
+
+    private void createNotificationChannel() {
+        // Create the NotificationChannel, but only on API 26+ because
+        // the NotificationChannel class is new and not in the support library
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            CharSequence name = "All";
+            String description = "All notifications";
+            int importance = NotificationManager.IMPORTANCE_DEFAULT;
+            NotificationChannel channel = new NotificationChannel("ONE", name, importance);
+            channel.setDescription(description);
+            // Register the channel with the system; you can't change the importance
+            // or other notification behaviors after this
+            NotificationManager notificationManager = getSystemService(NotificationManager.class);
+            notificationManager.createNotificationChannel(channel);
+        }
+    }
+
 }
