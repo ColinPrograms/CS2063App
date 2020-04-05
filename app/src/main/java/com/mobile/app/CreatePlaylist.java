@@ -2,6 +2,7 @@ package com.mobile.app;
 
 import android.Manifest;
 import android.app.Activity;
+import android.app.Dialog;
 import android.content.ClipData;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -57,7 +58,7 @@ public class CreatePlaylist extends Activity {
         Bundle bundle = fromIntent.getExtras();
         playlistName = bundle.getString("name");
         playlistTxt = findViewById(R.id.playlistName);
-        playlistTxt.setText(playlistName);
+        playlistTxt.setText(playlistName.substring(1,playlistName.length()-1));
         Cursor cursor = mydb.getTableRows(playlistName);
         if(cursor != null && cursor.moveToFirst()){
             titles.add(cursor.getString(1));
@@ -185,6 +186,7 @@ public class CreatePlaylist extends Activity {
     public void onBackPressed(){
         Intent intent = new Intent(CreatePlaylist.this,PlaylistsActivity.class);
         startActivity(intent);
+        finish();
     }
 
 
@@ -199,10 +201,12 @@ public class CreatePlaylist extends Activity {
         private class ViewHolder extends RecyclerView.ViewHolder {
             private TextView songTitle;
             private TextView songArtist;
+            private ConstraintLayout layout;
             private ViewHolder(ConstraintLayout v){
                 super(v);
                 songTitle = v.findViewById(R.id.song_nametxt);
                 songArtist = v.findViewById(R.id.song_artisttxt);
+                layout = v;
             }
         }
 
@@ -212,10 +216,40 @@ public class CreatePlaylist extends Activity {
             return new ViewHolder(v);
         }
 
-        public void onBindViewHolder(ViewHolder holder, int position) {
+        public void onBindViewHolder(ViewHolder holder, final int position) {
             holder.songTitle.setText(songTitles.get(position));
             holder.songArtist.setText(songArtists.get(position));
-
+            holder.layout.setOnClickListener(new View.OnClickListener(){
+                @Override
+                public void onClick(View v) {
+                    final Dialog deleteSong = new Dialog(CreatePlaylist.this);
+                    deleteSong.setContentView(R.layout.song_delete_dialog);
+                    TextView songTitle = deleteSong.findViewById(R.id.songtitledialog);
+                    TextView songArtist = deleteSong.findViewById(R.id.songartistdialog);
+                    Button yes = deleteSong.findViewById(R.id.yesbtn);
+                    Button no = deleteSong.findViewById(R.id.nobtn);
+                    songTitle.setText(songTitles.get(position));
+                    songArtist.setText(songArtists.get(position));
+                    deleteSong.show();
+                    yes.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            mydb.deleteSong(songTitles.get(position),songArtists.get(position),playlistName);
+                            titles.remove(position);
+                            artists.remove(position);
+                            adapter = new SongsAdapter(titles,artists);
+                            recyclerView.setAdapter(adapter);
+                            deleteSong.hide();
+                        }
+                    });
+                    no.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            deleteSong.hide();
+                        }
+                    });
+                }
+            });
         }
 
         public int getItemCount() {

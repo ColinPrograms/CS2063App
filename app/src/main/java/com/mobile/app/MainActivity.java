@@ -12,7 +12,6 @@ import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.view.View;
@@ -72,6 +71,13 @@ public class MainActivity extends Activity implements LocationListener {
     public void playlistsBtnClick(View v){
         Intent toPlaylists = new Intent(this, PlaylistsActivity.class);
         startActivity(toPlaylists);
+    }
+    @Override
+    public void onBackPressed(){
+        Intent intent = new Intent(Intent.ACTION_MAIN);
+        intent.addCategory(Intent.CATEGORY_HOME);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(intent);
     }
 
     public void playbtnClick(View v) {

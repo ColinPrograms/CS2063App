@@ -28,6 +28,7 @@ public class PlaylistsActivity extends Activity {
     RecyclerView recyclerView;
     PlaylistsAdapter adapter;
     Dialog dialog;
+    Dialog editDelete;
 
 
     @Override
@@ -48,26 +49,21 @@ public class PlaylistsActivity extends Activity {
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         dialog = new Dialog(this);
+        editDelete = new Dialog(this);
     }
     private class PlaylistsAdapter extends RecyclerView.Adapter<PlaylistsAdapter.ViewHolder> {
-        private ArrayList<String> playlists;
+        private ArrayList<String> playlists1;
 
         public PlaylistsAdapter(ArrayList<String> playlistTitleIn){
-            playlists = playlistTitleIn;
+            playlists1 = playlistTitleIn;
         }
         private class ViewHolder extends RecyclerView.ViewHolder {
             private TextView playlist;
+            private ConstraintLayout layout;
             private ViewHolder(ConstraintLayout v){
                 super(v);
                 playlist = v.findViewById(R.id.playlist_nametxt);
-                v.setOnClickListener(new View.OnClickListener(){
-                    @Override
-                    public void onClick(View v){
-                        Intent intent = new Intent(PlaylistsActivity.this,CreatePlaylist.class);
-                        intent.putExtra("name",playlist.getText().toString());
-                        startActivity(intent);
-                    }
-                });
+                layout = v;
             }
         }
 
@@ -77,12 +73,49 @@ public class PlaylistsActivity extends Activity {
             return new ViewHolder(v);
         }
 
-        public void onBindViewHolder(PlaylistsAdapter.ViewHolder holder, int position) {
-             holder.playlist.setText(playlists.get(position));
+        public void onBindViewHolder(PlaylistsAdapter.ViewHolder holder, final int position) {
+            holder.playlist.setText(playlists.get(position).substring(1,playlists.get(position).length()-1));
+
+            holder.layout.setOnClickListener(new View.OnClickListener(){
+                @Override
+                public void onClick(View v){
+                    editDelete.setContentView(R.layout.playlist_edit_delete_dialog);
+                    editDelete.show();
+                    Button edit = editDelete.findViewById(R.id.editbtn);
+                    Button delete = editDelete.findViewById(R.id.deletebtn);
+                    TextView titletxt = editDelete.findViewById(R.id.titleTxt);
+                    titletxt.setText(playlists.get(position).substring(1,playlists.get(position).length()-1));
+                    edit.setOnClickListener(new View.OnClickListener(){
+                        @Override
+                        public void onClick(View v) {
+                            Intent intent = new Intent(PlaylistsActivity.this,CreatePlaylist.class);
+                            intent.putExtra("name",playlists.get(position));
+                            startActivity(intent);
+                        }
+                    });
+                    delete.setOnClickListener(new View.OnClickListener(){
+                        @Override
+                        public void onClick(View v) {
+                            mydb.deletePlaylist(playlists.get(position));
+                            editDelete.hide();
+                            playlists = new ArrayList<>();
+                            Cursor cursor = mydb.getTableRows("playlists_table");
+                            if(cursor != null && cursor.moveToFirst()) {
+                                playlists.add(cursor.getString(1));
+                                while(cursor.moveToNext()){
+                                    playlists.add(cursor.getString(1));
+                                }
+                            }
+                            adapter = new PlaylistsAdapter(playlists);
+                            recyclerView.setAdapter(adapter);
+                        }
+                    });
+                }
+            });
         }
 
         public int getItemCount() {
-            return playlists.size();
+            return playlists1.size();
         }
     }
 
@@ -103,14 +136,12 @@ public class PlaylistsActivity extends Activity {
             @Override
             public void onClick(View v){
                 TextInputEditText input = dialog.findViewById(R.id.playlistNameInputField);
-                String text = input.getText().toString();
-
-                if(text.equals("")){
+                String text = "[" + input.getText().toString() + "]";
+                String textCheck = input.getText().toString();
+                textCheck = textCheck.replace(" ", "");
+                if(textCheck.length() == 0){
                     TextView errorText = dialog.findViewById(R.id.errorText);
-                    errorText.setText("Input Playlist Name");
-                }else if(Character.isDigit(text.charAt(0))) {
-                    TextView errorText = dialog.findViewById(R.id.errorText);
-                    errorText.setText("Playlist cannot start with a Number");
+                    errorText.setText("Playlist name cannot be empty");
                 }else{
                     int result = mydb.addPlaylist(text);
                     Log.e("playlistsActivity","here");
@@ -130,5 +161,6 @@ public class PlaylistsActivity extends Activity {
     public void onBackPressed(){
         Intent intent = new Intent(PlaylistsActivity.this,MainActivity.class);
         startActivity(intent);
+        finish();
     }
 }

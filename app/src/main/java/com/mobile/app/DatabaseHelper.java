@@ -65,6 +65,19 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             return 1;
         }
     }
+    public int deletePlaylist(String playlistName){
+        SQLiteDatabase db = this.getWritableDatabase();
+        String a[] = {"Title"};
+        String b[] = {playlistName};
+        Cursor cursor = db.query(PLAYLISTS, a,"Title = ?",b,null,null,null);
+        if(cursor.getCount()== 0){
+            return 2;
+        }else{
+            db.execSQL("DROP TABLE IF EXISTS " + playlistName);
+            db.delete(PLAYLISTS,"Title=?",b);
+            return 1;
+        }
+    }
 
     public void changePlaylistLocation(String playlistName, String location){
         SQLiteDatabase db = this.getWritableDatabase();
@@ -86,6 +99,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         }else{
             return true;
         }
+    }
+    public boolean deleteSong(String title, String artist, String tableName){
+        SQLiteDatabase db = this.getWritableDatabase();
+        String a[] = {title,artist};
+        db.delete(tableName,"Title=? and Artist=?",a);
+        return true;
     }
     public Cursor getTableRows(String tableName) {
         SQLiteDatabase db = this.getWritableDatabase();
