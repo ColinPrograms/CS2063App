@@ -42,7 +42,7 @@ public class MainActivity extends Activity implements LocationListener {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        createNotificationChannel();
+
         locationHelper = new LocationHelper(this);
         if(ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED){
             ActivityCompat.requestPermissions(this,new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},1);
@@ -50,6 +50,7 @@ public class MainActivity extends Activity implements LocationListener {
         if(!checkPermission()){
             requestPermission();
         }
+        createNotificationChannel();
         Button nextbtn = findViewById(R.id.nextbtn);
         nextbtn.setOnClickListener(new View.OnClickListener() {
             @Override
