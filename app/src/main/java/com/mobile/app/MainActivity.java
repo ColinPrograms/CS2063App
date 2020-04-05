@@ -36,7 +36,7 @@ public class MainActivity extends Activity implements LocationListener {
 
 
     private static final int PERMISSION_CODE = 101;
-    String[] permissions_all={Manifest.permission.ACCESS_COARSE_LOCATION,Manifest.permission.ACCESS_FINE_LOCATION};
+    String[] permissions_all={Manifest.permission.ACCESS_COARSE_LOCATION,Manifest.permission.ACCESS_FINE_LOCATION,Manifest.permission.FOREGROUND_SERVICE};
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
