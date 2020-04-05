@@ -15,6 +15,7 @@ import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.view.View;
+import android.widget.Button;
 import android.widget.Toast;
 
 import androidx.core.app.ActivityCompat;
@@ -43,6 +44,13 @@ public class MainActivity extends Activity implements LocationListener {
         if(!checkPermission()){
             requestPermission();
         }
+        Button nextbtn = findViewById(R.id.nextbtn);
+        nextbtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mService.next();
+            }
+        });
     }
 
     @Override
@@ -60,6 +68,10 @@ public class MainActivity extends Activity implements LocationListener {
             MusicService.MusicBinder binder = (MusicService.MusicBinder)service;
             mService = binder.getService();
             bound = true;
+            if(mService.isPlaying()){
+                Button v = findViewById(R.id.playbtn);
+                v.setBackgroundResource(android.R.drawable.ic_media_pause);
+            }
         }
 
         @Override

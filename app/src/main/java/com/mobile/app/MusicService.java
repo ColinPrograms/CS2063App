@@ -17,6 +17,7 @@ public class MusicService extends Service {
 
     MediaPlayer player;
     boolean playing = false;
+    boolean nextWhilePaused = false;
 
     public class MusicBinder extends Binder {
         MusicService getService() {
@@ -36,7 +37,13 @@ public class MusicService extends Service {
     }
 
     public boolean isPlaying(){
-        return player.isPlaying();
+        boolean playing = false;
+        try{
+            playing = player.isPlaying();
+        }catch(Exception e){
+
+        }
+        return playing;
     }
 
     int count = 0;
@@ -46,7 +53,7 @@ public class MusicService extends Service {
         if(count>=size){
             count = 0;
         }
-        if(!playing){
+        if(!playing || nextWhilePaused){
             cursor.moveToPosition(count);
             String uriS = cursor.getString(3);
             Uri uri = Uri.parse(uriS);
@@ -61,8 +68,8 @@ public class MusicService extends Service {
                 @Override
                 public void onPrepared(MediaPlayer mp) {
                     mp.start();
-                    count++;
                     playing = true;
+                    nextWhilePaused = false;
                 }
                 });
         }else{
@@ -73,9 +80,20 @@ public class MusicService extends Service {
             @Override
             public void onCompletion(MediaPlayer mp) {
                 playing = false;
+                count++;
                 play();
             }
         });
+    }
+    public void next(){
+        if(isPlaying()){
+            count++;
+            player.stop();
+            play();
+        }else{
+            nextWhilePaused = true;
+            count++;
+        }
     }
 
     public void pause(){
