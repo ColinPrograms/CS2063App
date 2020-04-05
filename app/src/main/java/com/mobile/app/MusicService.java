@@ -9,7 +9,6 @@ import android.net.Uri;
 import android.os.Binder;
 import android.os.Build;
 import android.os.IBinder;
-import android.util.Log;
 
 import androidx.core.app.NotificationCompat;
 
@@ -25,6 +24,7 @@ public class MusicService extends Service {
     MediaPlayer player;
     private String playlistName = "dummy";
     boolean playing = false;
+    boolean nextWhilePaused = false;
 
     public class MusicBinder extends Binder {
         MusicService getService() {
@@ -44,11 +44,18 @@ public class MusicService extends Service {
     }
 
     public boolean isPlaying(){
-        return player.isPlaying();
+        boolean playing = false;
+        try{
+            playing = player.isPlaying();
+        }catch(Exception e){
+
+        }
+        return playing;
     }
 
     int count = 0;
     public void play(){
+
         String newPlaylistName = LocationFinder.findPlaylist(mydb, locationHelper.getLocation());
         if(!newPlaylistName.equals(playlistName)){
             count = 0;
@@ -56,15 +63,18 @@ public class MusicService extends Service {
         }
         Cursor cursor = mydb.getTableRows(playlistName);
 
-        if(!playing){
-            int size = cursor.getCount();
-            if(count>=size){
-                count = 0;
-            }
+
+
+        int size = cursor.getCount();
+        if(count>=size){
+            count = 0;
+        }
+        if(!playing || nextWhilePaused){
             cursor.moveToPosition(count);
             String uriS = cursor.getString(3);
             Uri uri = Uri.parse(uriS);
             try{
+                player.reset();
                 player.setDataSource(this,uri);
                 player.prepareAsync();
             }catch(IOException e){
@@ -74,23 +84,32 @@ public class MusicService extends Service {
                 @Override
                 public void onPrepared(MediaPlayer mp) {
                     mp.start();
-                    count++;
-                    Log.e("serviceee",count +"prepared");
                     playing = true;
+                    nextWhilePaused = false;
                 }
                 });
         }else{
-            Log.e("serviceee",count +"else");
             player.start();
         }
 
         player.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
             @Override
             public void onCompletion(MediaPlayer mp) {
-
+                playing = false;
+                count++;
                 play();
             }
         });
+    }
+    public void next(){
+        if(isPlaying()){
+            count++;
+            player.stop();
+            play();
+        }else{
+            nextWhilePaused = true;
+            count++;
+        }
     }
 
     public void pause(){
