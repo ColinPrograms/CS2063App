@@ -54,6 +54,10 @@ public class MusicService extends Service {
     }
 
     int count = 0;
+    int size = 0;
+    int getPlaylistSize(){
+        return size;
+    }
     public void play(){
         String newPlaylistName = LocationFinder.findPlaylist(mydb, locationHelper.getLocation());
         if(!newPlaylistName.equals(playlistName)){
@@ -61,31 +65,33 @@ public class MusicService extends Service {
             playlistName = newPlaylistName;
         }
         Cursor cursor = mydb.getTableRows(playlistName);
-        int size = cursor.getCount();
+        size = cursor.getCount();
         if(count>=size){
             count = 0;
         }
-        if(!playing || nextWhilePaused){
-            cursor.moveToPosition(count);
-            String uriS = cursor.getString(3);
-            Uri uri = Uri.parse(uriS);
-            try{
-                player.reset();
-                player.setDataSource(this,uri);
-                player.prepareAsync();
-            }catch(IOException e){
+        if(size>0){
+            if(!playing || nextWhilePaused){
+                cursor.moveToPosition(count);
+                String uriS = cursor.getString(3);
+                Uri uri = Uri.parse(uriS);
+                try{
+                    player.reset();
+                    player.setDataSource(this,uri);
+                    player.prepareAsync();
+                }catch(IOException e){
 
-            }
-            player.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-                @Override
-                public void onPrepared(MediaPlayer mp) {
-                    mp.start();
-                    playing = true;
-                    nextWhilePaused = false;
                 }
+                player.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+                    @Override
+                    public void onPrepared(MediaPlayer mp) {
+                        mp.start();
+                        playing = true;
+                        nextWhilePaused = false;
+                    }
                 });
-        }else{
-            player.start();
+            }else{
+                player.start();
+            }
         }
 
         player.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {

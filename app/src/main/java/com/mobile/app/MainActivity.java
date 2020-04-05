@@ -121,7 +121,9 @@ public class MainActivity extends Activity implements LocationListener {
                 }
                 if(!mService.isPlaying()) {
                     mService.play();
-                    v.setBackgroundResource(android.R.drawable.ic_media_pause);
+                    if(mService.getPlaylistSize() > 0){
+                        v.setBackgroundResource(android.R.drawable.ic_media_pause);
+                    }
                 }else{
                     mService.pause();
                     v.setBackgroundResource(android.R.drawable.ic_media_play);
