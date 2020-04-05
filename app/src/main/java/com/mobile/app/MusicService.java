@@ -55,16 +55,12 @@ public class MusicService extends Service {
 
     int count = 0;
     public void play(){
-
         String newPlaylistName = LocationFinder.findPlaylist(mydb, locationHelper.getLocation());
         if(!newPlaylistName.equals(playlistName)){
             count = 0;
             playlistName = newPlaylistName;
         }
         Cursor cursor = mydb.getTableRows(playlistName);
-
-
-
         int size = cursor.getCount();
         if(count>=size){
             count = 0;
