@@ -18,7 +18,6 @@ import java.io.IOException;
 public class MusicService extends Service {
     DatabaseHelper mydb = new DatabaseHelper(this);
     LocationHelper locationHelper = new LocationHelper(this);
-    //MainActivity mainActivity = new MainActivity();
 
     private IBinder binder = new MusicBinder();
 
@@ -26,6 +25,8 @@ public class MusicService extends Service {
     private String playlistName = "dummy";
     boolean playing = false;
     boolean nextWhilePaused = false;
+    private String currentSong = "";
+    private String currentArtist = "";
 
     public class MusicBinder extends Binder {
         MusicService getService() {
@@ -79,6 +80,9 @@ public class MusicService extends Service {
                     player.reset();
                     player.setDataSource(this,uri);
                     player.prepareAsync();
+                    currentSong = cursor.getString(1);
+                    currentArtist = cursor.getString(2);
+                    getSongInfo();
                 }catch(IOException e){
 
                 }
@@ -99,10 +103,16 @@ public class MusicService extends Service {
             @Override
             public void onCompletion(MediaPlayer mp) {
                 playing = false;
-                count++;
                 play();
             }
         });
+    }
+
+    public void getSongInfo(){
+        Intent intent = new Intent("songInfo");
+        intent.putExtra("songName", currentSong);
+        intent.putExtra("artist", currentArtist);
+        sendBroadcast(intent);
     }
     public void next(){
         if(isPlaying()){
@@ -110,8 +120,17 @@ public class MusicService extends Service {
             player.stop();
             play();
         }else{
+            Cursor cursor = mydb.getTableRows(playlistName);
             nextWhilePaused = true;
             count++;
+            size = cursor.getCount();
+            if(count>=size){
+                count = 0;
+            }
+            cursor.moveToPosition(count);
+            currentSong = cursor.getString(1);
+            currentArtist = cursor.getString(2);
+            getSongInfo();
         }
     }
 

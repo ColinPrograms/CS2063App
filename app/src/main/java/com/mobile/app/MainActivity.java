@@ -4,9 +4,11 @@ import android.Manifest;
 import android.app.Activity;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
+import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
@@ -16,6 +18,7 @@ import android.os.IBinder;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.core.app.ActivityCompat;
@@ -24,7 +27,8 @@ import androidx.core.content.ContextCompat;
 public class MainActivity extends Activity{
     MusicService mService;
     boolean bound = false;
-    DatabaseHelper mydb = new DatabaseHelper(this);;
+    DatabaseHelper mydb = new DatabaseHelper(this);
+    Receiver myreceiver = new Receiver();
 
 
     LocationHelper locationHelper;
@@ -51,8 +55,21 @@ public class MainActivity extends Activity{
                 mService.next();
             }
         });
+        registerReceiver(myreceiver,new IntentFilter("songInfo"));
 
 
+    }
+    private class Receiver extends BroadcastReceiver{
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            Bundle bundle = intent.getExtras();
+            String artist = bundle.getString("artist");
+            String song = bundle.getString("songName");
+            TextView arttxt = findViewById(R.id.artisttxt);
+            TextView songtxt = findViewById(R.id.songnametxt);
+            arttxt.setText(artist);
+            songtxt.setText(song);
+        }
     }
 
     @Override
@@ -80,6 +97,7 @@ public class MainActivity extends Activity{
                 Button v = findViewById(R.id.playbtn);
                 v.setBackgroundResource(android.R.drawable.ic_media_pause);
             }
+            mService.getSongInfo();
         }
 
         @Override
