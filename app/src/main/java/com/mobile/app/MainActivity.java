@@ -105,36 +105,34 @@ public class MainActivity extends Activity{
     }
 
     public void playbtnClick(View v) {
-
-        if(ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED){
-            Cursor playlists = mydb.getTableRows("playlists_table");
-            int playSize = playlists.getCount();
-            if(playSize > 0){
-                if(!bound){
-                    Intent musicServiceIntent = new Intent(this, MusicService.class);
-                    bindService(musicServiceIntent,connection, Context.BIND_AUTO_CREATE);
-                }
-                if(!mService.isPlaying()) {
-                    mService.play();
-                    if(mService.getPlaylistSize() > 0){
-                        v.setBackgroundResource(android.R.drawable.ic_media_pause);
+        if(!checkPermission()){
+            requestPermission();
+        }else{
+            if(ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED){
+                Cursor playlists = mydb.getTableRows("playlists_table");
+                int playSize = playlists.getCount();
+                if(playSize > 0){
+                    if(!bound){
+                        Intent musicServiceIntent = new Intent(this, MusicService.class);
+                        bindService(musicServiceIntent,connection, Context.BIND_AUTO_CREATE);
+                    }
+                    if(!mService.isPlaying()) {
+                        mService.play();
+                        if(mService.getPlaylistSize() > 0){
+                            v.setBackgroundResource(android.R.drawable.ic_media_pause);
+                        }
+                    }else{
+                        mService.pause();
+                        v.setBackgroundResource(android.R.drawable.ic_media_play);
                     }
                 }else{
-                    mService.pause();
-                    v.setBackgroundResource(android.R.drawable.ic_media_play);
+                    Toast t = Toast.makeText(this,"No Playlists Exist",Toast.LENGTH_SHORT);
+                    t.show();
                 }
             }else{
-                Toast t = Toast.makeText(this,"No Playlists Exist",Toast.LENGTH_SHORT);
-                t.show();
+                ActivityCompat.requestPermissions(this,new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},1);
             }
-        }else{
-            ActivityCompat.requestPermissions(this,new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},1);
-        }
-        Log.d("service", "button pressed");
-
-        if(checkPermission()){
-           // locationHelper.getLocation();
-            Toast.makeText(this, locationHelper.getLocation().getLatitude() + " " + locationHelper.getLocation().getLongitude(), Toast.LENGTH_LONG).show();
+            Log.d("service", "button pressed");
         }
     }
 
