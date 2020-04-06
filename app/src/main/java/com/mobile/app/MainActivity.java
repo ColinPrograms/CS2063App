@@ -10,6 +10,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
 import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationListener;
@@ -28,6 +29,7 @@ import androidx.core.content.ContextCompat;
 public class MainActivity extends Activity{
     MusicService mService;
     boolean bound = false;
+    DatabaseHelper mydb = new DatabaseHelper(this);;
 
 
     LocationHelper locationHelper;
@@ -108,23 +110,27 @@ public class MainActivity extends Activity{
     }
 
     public void playbtnClick(View v) {
-        if(!checkPermission()){
-            requestPermission();
-        }
-        if(ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED && checkPermission()){
-            if(!bound){
-                Intent musicServiceIntent = new Intent(this, MusicService.class);
-                bindService(musicServiceIntent,connection, Context.BIND_AUTO_CREATE);
-                Log.d("service", "bound");
-            }
-            if(!mService.isPlaying()) {
-                Log.d("service", "play");
-                mService.play();
-                v.setBackgroundResource(android.R.drawable.ic_media_pause);
+
+        if(ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED){
+            Cursor playlists = mydb.getTableRows("playlists_table");
+            int playSize = playlists.getCount();
+            if(playSize > 0){
+                if(!bound){
+                    Intent musicServiceIntent = new Intent(this, MusicService.class);
+                    bindService(musicServiceIntent,connection, Context.BIND_AUTO_CREATE);
+                }
+                if(!mService.isPlaying()) {
+                    mService.play();
+                    if(mService.getPlaylistSize() > 0){
+                        v.setBackgroundResource(android.R.drawable.ic_media_pause);
+                    }
+                }else{
+                    mService.pause();
+                    v.setBackgroundResource(android.R.drawable.ic_media_play);
+                }
             }else{
-                mService.pause();
-                Log.d("service", "pause");
-                v.setBackgroundResource(android.R.drawable.ic_media_play);
+                Toast t = Toast.makeText(this,"No Playlists Exist",Toast.LENGTH_SHORT);
+                t.show();
             }
         }else{
             ActivityCompat.requestPermissions(this,new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},1);
