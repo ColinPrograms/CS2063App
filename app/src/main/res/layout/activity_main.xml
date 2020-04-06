@@ -16,23 +16,27 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
-        <Button
+        <ImageButton
             android:id="@+id/nextbtn"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="@android:drawable/ic_media_next"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:background="@drawable/play_button_background"
+            android:src="@drawable/iconfinder_music_forward"
+            android:scaleType="centerCrop"
             android:contentDescription="@string/nextsong"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/playbtn"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <Button
+        <ImageButton
             android:id="@+id/playbtn"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="@android:drawable/ic_media_play"
+            android:layout_width="90dp"
+            android:layout_height="90dp"
+            android:background="@drawable/play_button_background"
+            android:src="@drawable/iconfinder_icon_play"
             android:contentDescription="@string/playsong"
+            android:scaleType="centerCrop"
             android:onClick="playbtnClick"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
@@ -45,7 +49,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="85dp"
             android:layout_marginBottom="21dp"
-            android:textColor="#FFFFFF"
+            android:textColor="#808080"
             app:layout_constraintBottom_toTopOf="@+id/songnametxt"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"

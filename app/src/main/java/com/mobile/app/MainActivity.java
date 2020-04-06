@@ -18,6 +18,7 @@ import android.os.IBinder;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -29,6 +30,7 @@ public class MainActivity extends Activity{
     boolean bound = false;
     DatabaseHelper mydb = new DatabaseHelper(this);
     Receiver myreceiver = new Receiver();
+    ImageButton playButton;
 
 
     LocationHelper locationHelper;
@@ -41,6 +43,7 @@ public class MainActivity extends Activity{
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        playButton = findViewById(R.id.playbtn);
 
         locationHelper = new LocationHelper(this);
         if(ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED){
@@ -48,7 +51,7 @@ public class MainActivity extends Activity{
         }
 
         createNotificationChannel();
-        Button nextbtn = findViewById(R.id.nextbtn);
+        ImageButton nextbtn = findViewById(R.id.nextbtn);
         nextbtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -94,8 +97,7 @@ public class MainActivity extends Activity{
             mService = binder.getService();
             bound = true;
             if(mService.isPlaying()){
-                Button v = findViewById(R.id.playbtn);
-                v.setBackgroundResource(android.R.drawable.ic_media_pause);
+                playButton.setImageResource(R.drawable.iconfinder_icon_pause);
             }
             mService.getSongInfo();
         }
@@ -137,11 +139,11 @@ public class MainActivity extends Activity{
                     if(!mService.isPlaying()) {
                         mService.play();
                         if(mService.getPlaylistSize() > 0){
-                            v.setBackgroundResource(android.R.drawable.ic_media_pause);
+                            playButton.setImageResource(R.drawable.iconfinder_icon_pause);
                         }
                     }else{
                         mService.pause();
-                        v.setBackgroundResource(android.R.drawable.ic_media_play);
+                        playButton.setImageResource(R.drawable.iconfinder_icon_play);
                     }
                 }else{
                     Toast t = Toast.makeText(this,"No Playlists Exist",Toast.LENGTH_SHORT);

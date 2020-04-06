@@ -4,6 +4,7 @@ import android.app.Notification;
 import android.app.Service;
 import android.content.Intent;
 import android.database.Cursor;
+import android.graphics.BitmapFactory;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Binder;
@@ -143,9 +144,10 @@ public class MusicService extends Service {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
 
             Notification.Builder builder = new Notification.Builder(this, "ONE")
-                    .setContentTitle(getString(R.string.app_name))
-                    .setContentText("")
-                    .setAutoCancel(true);
+                    .setContentTitle("SongScape")
+                    .setContentText("Listening for playlists!")
+                    .setAutoCancel(true)
+                    .setSmallIcon(R.drawable.ic_stat_name);
 
             Notification notification = builder.build();
             startForeground(1, notification);
@@ -153,10 +155,11 @@ public class MusicService extends Service {
         } else {
 
             NotificationCompat.Builder builder = new NotificationCompat.Builder(this)
-                    .setContentTitle(getString(R.string.app_name))
-                    .setContentText("")
+                    .setContentTitle("SongScape")
+                    .setContentText("Listening for playlists!")
                     .setPriority(NotificationCompat.PRIORITY_DEFAULT)
-                    .setAutoCancel(true);
+                    .setAutoCancel(true)
+                    .setSmallIcon(R.drawable.ic_stat_name);
 
             Notification notification = builder.build();
 
