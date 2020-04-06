@@ -4,17 +4,12 @@ import android.Manifest;
 import android.app.Activity;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
-import android.app.Service;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
-import android.location.Criteria;
-import android.location.Location;
-import android.location.LocationListener;
-import android.location.LocationManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
@@ -96,10 +91,10 @@ public class MainActivity extends Activity{
     public void playlistsBtnClick(View v){
         if(!checkPermission()){
             requestPermission();
+        }else{
+            Intent toPlaylists = new Intent(this, PlaylistsActivity.class);
+            startActivity(toPlaylists);
         }
-
-        Intent toPlaylists = new Intent(this, PlaylistsActivity.class);
-        startActivity(toPlaylists);
     }
     @Override
     public void onBackPressed(){
