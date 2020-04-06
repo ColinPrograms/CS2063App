@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="com.mobile.app">
 
     <!--
@@ -13,10 +14,11 @@
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
-        android:label="@string/app_name"
+        android:label="SongScape"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme">
+        android:theme="@style/AppTheme"
+        tools:ignore="GoogleAppIndexingWarning">
 
         <!--
              The API key for Google Maps-based APIs is defined as a string resource.
@@ -30,7 +32,8 @@
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/google_maps_key" />
 
-        <activity android:name=".MapsActivity" />
+        <activity   android:name=".MapsActivity"
+                    android:screenOrientation="portrait"/>
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -38,10 +41,14 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".CreatePlaylist" />
-        <activity android:name=".PlaylistsActivity" />
-        <activity android:name=".TagSelectActivity" />
-        <service android:name=".MusicService" />
+        <activity   android:name=".CreatePlaylist"
+                    android:screenOrientation="portrait"/>
+
+        <activity   android:name=".PlaylistsActivity"
+                    android:screenOrientation="portrait"/>
+
+
+        <service    android:name=".MusicService" />
     </application>
 
 </manifest>

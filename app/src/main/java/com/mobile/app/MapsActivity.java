@@ -1,11 +1,15 @@
 package com.mobile.app;
 
+import android.Manifest;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Color;
+import android.location.Location;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageButton;
 
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentActivity;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -29,12 +33,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private Bundle bundle;
     private boolean hasLocation;
     private String passedLocation;
-
+    private LocationHelper locationHelper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         bundle = getIntent().getExtras();
+
         hasLocation = bundle.getBoolean("hasLocation");
         passedLocation = bundle.getString("location");
 
@@ -51,15 +56,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
 
-    /**
-     * Manipulates the map once available.
-     * This callback is triggered when the map is ready to be used.
-     * This is where we can add markers or lines, add listeners or move the camera. In this case,
-     * we just add a marker near Sydney, Australia.
-     * If Google Play services is not installed on the device, the user will be prompted to install
-     * it inside the SupportMapFragment. This method will only be triggered once the user has
-     * installed Google Play services and returned to the app.
-     */
     @Override
     public void onMapReady(GoogleMap googleMap) {
         Intent intent = getIntent();
@@ -86,7 +82,18 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
         else{
 
+            locationHelper = new LocationHelper(this);
+
             selection = new LatLng(43.8375, -66.1174);
+
+            if(ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED){
+                Location loc = locationHelper.getLocation();
+                    if(loc != null){
+                        selection = new LatLng(loc.getLatitude(),loc.getLongitude());
+                    }
+            }
+
+
             mCircle = mMap.addCircle(new CircleOptions()
                     .center(selection)
                     .radius(50)

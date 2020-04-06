@@ -77,21 +77,25 @@ public class CreatePlaylist extends Activity {
         savePlaylist.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                intent = new Intent(CreatePlaylist.this, MapsActivity.class);
-                if(mydb.getPlaylistLocation(playlistName) ==  null){
-                   intent.putExtra("hasLocation", false);
-                   Log.d("mapOpen", "nothing in db");
-                    //Log.d("mapOpen", mydb.getPlaylistLocation(playlistName));
+                if(titles.size() > 0) {
+                    intent = new Intent(CreatePlaylist.this, MapsActivity.class);
+                    if (mydb.getPlaylistLocation(playlistName) == null) {
+                        intent.putExtra("hasLocation", false);
+                        Log.d("mapOpen", "nothing in db");
+                        //Log.d("mapOpen", mydb.getPlaylistLocation(playlistName));
+                    } else {
+                        //PASS CURRENT
+                        intent.putExtra("hasLocation", true);
+                        intent.putExtra("location", mydb.getPlaylistLocation(playlistName));
+                        Log.d("mapOpen", "something in db");
+                        Log.d("mapOpen", mydb.getPlaylistLocation(playlistName));
+                    }
+
+                    startActivityForResult(intent, 2);
                 }
                 else{
-                    //PASS CURRENT
-                    intent.putExtra("hasLocation", true);
-                    intent.putExtra("location", mydb.getPlaylistLocation(playlistName));
-                    Log.d("mapOpen", "something in db");
-                    Log.d("mapOpen", mydb.getPlaylistLocation(playlistName));
+                    Toast.makeText(CreatePlaylist.this,"Playlist must contain songs!",Toast.LENGTH_LONG).show();
                 }
-
-                startActivityForResult(intent, 2);
             }
         });
 
@@ -283,6 +287,9 @@ public class CreatePlaylist extends Activity {
 
             mydb.changePlaylistLocation(playlistName,lat + " " + lng + " " + rad);
             Log.d("Result", lat + lng + rad);
+            Intent intent = new Intent(CreatePlaylist.this,PlaylistsActivity.class);
+            startActivity(intent);
+            finish();
 
         }
     }

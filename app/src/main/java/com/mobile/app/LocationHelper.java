@@ -1,6 +1,8 @@
 package com.mobile.app;
 
 import android.Manifest;
+import android.app.Notification;
+import android.app.NotificationManager;
 import android.app.Service;
 import android.content.Context;
 import android.content.pm.PackageManager;
@@ -8,15 +10,19 @@ import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.Toast;
 
 import androidx.core.app.ActivityCompat;
+import androidx.core.app.NotificationCompat;
+import androidx.core.app.NotificationManagerCompat;
 import androidx.core.content.ContextCompat;
 
     public class LocationHelper implements LocationListener {
-        private static final int PERMISSION_CODE = 101;
-        private String[] permissions_all={Manifest.permission.ACCESS_COARSE_LOCATION,Manifest.permission.ACCESS_FINE_LOCATION};
+        // private static final int PERMISSION_CODE = 101;
+        // String[] permissions_all={Manifest.permission.ACCESS_COARSE_LOCATION,Manifest.permission.ACCESS_FINE_LOCATION};
 
         private LocationManager locationManager;
         private boolean isGpsLocation;
@@ -30,19 +36,23 @@ import androidx.core.content.ContextCompat;
         }
 
         public Location getLocation() {
+
             getDeviceLocation();
+            //showNotification();
+            Log.d("Location is being found",loc.getLatitude() + "" + loc.getLongitude());
             return loc;
         }
 
 
     private void getDeviceLocation() {
-        //now all permission part complete now let's fetch location
+
         locationManager=(LocationManager)context.getSystemService(Service.LOCATION_SERVICE);
         isGpsLocation=locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
         isNetworklocation=locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
         if(!isGpsLocation && !isNetworklocation){
             // showSettingForLocation();
             getLastlocation();
+            Log.d("Location", "Got last location");
         }
         else{
             getFinalLocation();
@@ -54,7 +64,7 @@ import androidx.core.content.ContextCompat;
             try {
                 Criteria criteria = new Criteria();
                 String provider = locationManager.getBestProvider(criteria,false);
-                Location location = locationManager.getLastKnownLocation(provider);
+                loc = locationManager.getLastKnownLocation(provider);
             } catch (SecurityException e) {
                 e.printStackTrace();
             }
@@ -64,21 +74,19 @@ import androidx.core.content.ContextCompat;
     private void getFinalLocation() {
         try{
             if(isGpsLocation){
-                locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,1000*60*1,10,this);
+                locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,1000*60,10,this);
                 if(locationManager!=null){
                     loc=locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-                    if(loc!=null){
-                        this.loc = loc;
-                    }
+                    Log.d("Location", "Used GPS");
+
                 }
             }
             else if(isNetworklocation){
-                locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER,1000*60*1,10,this);
+                locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER,1000*60,10,this);
                 if(locationManager!=null){
                     loc=locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
-                    if(loc!=null){
-                        this.loc = loc;
-                    }
+                    Log.d("Location", "Used Network");
+
                 }
             }
             else{
@@ -92,7 +100,7 @@ import androidx.core.content.ContextCompat;
 
     @Override
     public void onLocationChanged(Location location) {
-        Toast.makeText(context, location.getLatitude() + " " + location.getLongitude(), Toast.LENGTH_LONG).show();
+        //Toast.makeText(context, location.getLatitude() + " " + location.getLongitude(), Toast.LENGTH_LONG).show();
     }
 
     @Override
@@ -109,6 +117,37 @@ import androidx.core.content.ContextCompat;
     public void onProviderDisabled(String provider) {
 
     }
+
+
+    //UNUSED NOTIFICATION SENDING
+    /*
+    public void showNotification(){
+        NotificationManagerCompat notificationManager = NotificationManagerCompat.from(context);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+
+            Notification.Builder builder = new Notification.Builder(context, "TWO")
+                    .setContentTitle("backgroundlocationcheck")
+                    .setContentText(loc.getLongitude() + " " + loc.getLatitude())
+                    .setAutoCancel(true);
+
+            Notification notification = builder.build();
+            notificationManager.notify();
+
+        } else {
+
+            NotificationCompat.Builder builder = new NotificationCompat.Builder(context)
+                    .setContentTitle("backgroundlocationcheck")
+                    .setContentText(loc.getLongitude() + " " + loc.getLatitude())
+                    .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+                    .setAutoCancel(true);
+
+            Notification notification = builder.build();
+
+
+        }
+    }
+
+     */
 }
 
 

@@ -2,6 +2,7 @@ package com.mobile.app;
 
 import android.database.Cursor;
 import android.location.Location;
+import android.util.Log;
 
 import java.util.ArrayList;
 
@@ -46,11 +47,12 @@ public class LocationFinder {
             Location.distanceBetween(playlists.get(i).getLat(), playlists.get(i).getLng(), location.getLatitude(), location.getLongitude(),results);
 
             double distance = results[0];
-
+            Log.d("LocationFinder", ""+ distance);
             distance -= playlists.get(i).getRad();
             if(distance < smallestDistance){
                 smallestDistance = distance;
                 closestPlaylist = playlists.get(i);
+                Log.d("LocationFinder", ""+ smallestDistance);
             }
         }
         return closestPlaylist.getPlaylistName();
