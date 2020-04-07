@@ -33,6 +33,7 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.Circle;
 import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -46,6 +47,8 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
     Receiver myreceiver = new Receiver();
     ImageButton playButton;
     private GoogleMap mMap;
+    private Circle mCircle;
+    private boolean mapStarted;
 
 
     LocationHelper locationHelper;
@@ -60,6 +63,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         playButton = findViewById(R.id.playbtn);
+        mapStarted = false;
 
         locationHelper = new LocationHelper(this);
         if(ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED){
@@ -248,7 +252,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
             selection = new LatLng(loc.getLatitude(),loc.getLongitude());
         }
 
-        mMap.addCircle(new CircleOptions()
+        mCircle = mMap.addCircle(new CircleOptions()
                 .center(selection)
                 .radius(30)
                 .strokeColor(Color.argb(0,200,0,200))
@@ -257,6 +261,21 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         mMap.getUiSettings().setAllGesturesEnabled(false);
         mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(selection, 14));
         mMap.setMaxZoomPreference(22);
+        mapStarted = true;
+
+
     }
+
+    @Override
+    public void onResume(){
+        super.onResume();
+        if(checkPermission() && mapStarted) {
+            Location loc = locationHelper.getLocation();
+            LatLng latLng = new LatLng(loc.getLatitude(), loc.getLongitude());
+            mCircle.setCenter(latLng);
+            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 14));
+        }
+    }
+
 
 }
