@@ -1,6 +1,7 @@
 package com.mobile.app;
 
 import android.app.Notification;
+import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Intent;
 import android.database.Cursor;
@@ -141,12 +142,16 @@ public class MusicService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+        Intent activityIntent = new Intent(this, MainActivity.class);
+        PendingIntent contentIntent = PendingIntent.getActivity(this, 0, activityIntent, 0);
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
 
             Notification.Builder builder = new Notification.Builder(this, "ONE")
                     .setContentTitle("SongScape")
                     .setContentText("Listening for playlists!")
                     .setAutoCancel(true)
+                    .setContentIntent(contentIntent)
                     .setSmallIcon(R.drawable.ic_stat_name);
 
             Notification notification = builder.build();
@@ -159,6 +164,7 @@ public class MusicService extends Service {
                     .setContentText("Listening for playlists!")
                     .setPriority(NotificationCompat.PRIORITY_DEFAULT)
                     .setAutoCancel(true)
+                    .setContentIntent(contentIntent)
                     .setSmallIcon(R.drawable.ic_stat_name);
 
             Notification notification = builder.build();
@@ -166,5 +172,13 @@ public class MusicService extends Service {
             startForeground(1, notification);
         }
         return START_NOT_STICKY;
+    }
+
+    @Override
+    public void onTaskRemoved(Intent rootIntent) {
+        super.onTaskRemoved(rootIntent);
+
+        //stop service
+        this.stopSelf();
     }
 }

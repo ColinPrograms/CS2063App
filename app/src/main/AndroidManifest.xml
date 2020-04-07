@@ -49,7 +49,8 @@
                     android:screenOrientation="portrait"/>
 
 
-        <service    android:name=".MusicService" />
+        <service    android:name=".MusicService"
+                    android:stopWithTask="true"/>
     </application>
 
 </manifest>
