@@ -50,6 +50,7 @@ public class CreatePlaylist extends Activity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        setTheme(R.style.AppTheme);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.create_playlist);
         addSongs = findViewById(R.id.addSongsBtn);
@@ -188,7 +189,10 @@ public class CreatePlaylist extends Activity {
 
     @Override
     public void onBackPressed(){
-        Intent intent = new Intent(CreatePlaylist.this,PlaylistsActivity.class);
+        if(mydb.getPlaylistLocation(playlistName) == null || titles.size() == 0) {
+            mydb.deletePlaylist(playlistName);
+        }
+        Intent intent = new Intent(CreatePlaylist.this, PlaylistsActivity.class);
         startActivity(intent);
         finish();
     }

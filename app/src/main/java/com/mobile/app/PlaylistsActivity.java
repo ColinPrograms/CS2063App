@@ -34,6 +34,7 @@ public class PlaylistsActivity extends Activity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState){
+        setTheme(R.style.AppTheme);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_playlists);
         createPlaylist = findViewById(R.id.createplaylist_linearlayout);
