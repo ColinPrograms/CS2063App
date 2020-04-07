@@ -5,7 +5,6 @@ import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Intent;
 import android.database.Cursor;
-import android.graphics.BitmapFactory;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Binder;
@@ -24,7 +23,7 @@ public class MusicService extends Service {
     private IBinder binder = new MusicBinder();
 
     MediaPlayer player;
-    private String playlistName = "dummy";
+    private String playlistName = "495mdf,sddummydf03esdl1-f,";
     boolean playing = false;
     boolean nextWhilePaused = false;
     private String currentSong = "";
@@ -64,6 +63,7 @@ public class MusicService extends Service {
     }
     public void play(){
         String newPlaylistName = LocationFinder.findPlaylist(mydb, locationHelper.getLocation());
+        Log.e("here", "new:"+ newPlaylistName + "| old: " + playlistName);
         if(!newPlaylistName.equals(playlistName)){
             count = 0;
             playlistName = newPlaylistName;
@@ -105,6 +105,7 @@ public class MusicService extends Service {
             @Override
             public void onCompletion(MediaPlayer mp) {
                 playing = false;
+                count++;
                 play();
             }
         });
@@ -120,6 +121,7 @@ public class MusicService extends Service {
         if(isPlaying()){
             count++;
             player.stop();
+            playing = false;
             play();
         }else{
             Cursor cursor = mydb.getTableRows(playlistName);
