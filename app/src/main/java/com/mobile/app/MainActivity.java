@@ -14,6 +14,7 @@ import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.location.Location;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
@@ -270,12 +271,29 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
     public void onResume(){
         super.onResume();
         if(checkPermission() && mapStarted) {
-            Location loc = locationHelper.getLocation();
-            LatLng latLng = new LatLng(loc.getLatitude(), loc.getLongitude());
+            ResumeMap resumeMap = new ResumeMap();
+            resumeMap.execute();
+        }
+    }
+
+    private class ResumeMap extends AsyncTask<Void,Void,LatLng> {
+        @Override
+        protected LatLng doInBackground(Void... params) {
+            LatLng latLng = new LatLng(66,44);
+            if (checkPermission() && mapStarted) {
+                Location loc = locationHelper.getLocation();
+                latLng = new LatLng(loc.getLatitude(), loc.getLongitude());
+
+            }
+            return latLng;
+        }
+
+        @Override
+        protected void onPostExecute(LatLng latLng) {
+            super.onPostExecute(latLng);
             mCircle.setCenter(latLng);
             mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 14));
         }
     }
-
 
 }
