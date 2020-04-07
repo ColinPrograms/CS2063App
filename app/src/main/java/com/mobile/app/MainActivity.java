@@ -12,6 +12,8 @@ import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
+import android.graphics.Color;
+import android.location.Location;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
@@ -24,13 +26,26 @@ import android.widget.Toast;
 
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentActivity;
 
-public class MainActivity extends Activity{
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.CircleOptions;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
+
+import java.util.ArrayList;
+
+public class MainActivity extends FragmentActivity implements OnMapReadyCallback {
     MusicService mService;
     boolean bound = false;
     DatabaseHelper mydb = new DatabaseHelper(this);
     Receiver myreceiver = new Receiver();
     ImageButton playButton;
+    private GoogleMap mMap;
 
 
     LocationHelper locationHelper;
@@ -61,6 +76,9 @@ public class MainActivity extends Activity{
         });
         registerReceiver(myreceiver,new IntentFilter("songInfo"));
 
+        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
+                .findFragmentById(R.id.map2);
+        mapFragment.getMapAsync(this);
 
     }
     private class Receiver extends BroadcastReceiver{
@@ -205,6 +223,40 @@ public class MainActivity extends Activity{
         }
 
          */
+    }
+
+    @Override
+    public void onMapReady(GoogleMap googleMap) {
+        mMap = googleMap;
+        LatLng selection = new LatLng(43.8375, -66.1174);
+        ArrayList<PlaylistObject> playlistObjects = LocationFinder.createPlaylistArrayList(mydb);
+        Log.d("Embedded Map","" + playlistObjects.size());
+
+        for(int i = 0; playlistObjects.size() > i; i++){
+            PlaylistObject playlistObject = playlistObjects.get(i);
+            selection = new LatLng(playlistObject.getLat(), playlistObject.getLng());
+            mMap.addCircle(new CircleOptions()
+                    .center(selection)
+                    .radius(playlistObject.getRad())
+                    .strokeColor(Color.argb(70,200,0,200))
+                    .fillColor(Color.argb(50,200,0,200)));
+        }
+
+        locationHelper = new LocationHelper(this);
+        if(checkPermission()){
+            Location loc = locationHelper.getLocation();
+            selection = new LatLng(loc.getLatitude(),loc.getLongitude());
+        }
+
+        mMap.addCircle(new CircleOptions()
+                .center(selection)
+                .radius(30)
+                .strokeColor(Color.argb(0,200,0,200))
+                .fillColor(Color.argb(255,200,0,200)));
+        //mMap.addMarker(new MarkerOptions().position(selection));
+        mMap.getUiSettings().setAllGesturesEnabled(false);
+        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(selection, 14));
+        mMap.setMaxZoomPreference(22);
     }
 
 }

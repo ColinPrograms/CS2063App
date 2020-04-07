@@ -8,7 +8,7 @@ import java.util.ArrayList;
 
 public class LocationFinder {
 
-    public static ArrayList<PlaylistObject> createPlaylistArrayList(DatabaseHelper mydb, Location location){
+    public static ArrayList<PlaylistObject> createPlaylistArrayList(DatabaseHelper mydb){
        // DatabaseHelper mydb = new DatabaseHelper(this);
         ArrayList<PlaylistObject> playlistObjects = new ArrayList<PlaylistObject>();
         Cursor cursor = mydb.getTableRows("playlists_table");
@@ -34,7 +34,7 @@ public class LocationFinder {
         return playlistObjects;
     }
     public static String findPlaylist(DatabaseHelper mydb, Location location){
-        return nearestBubble(createPlaylistArrayList(mydb, location), location);
+        return nearestBubble(createPlaylistArrayList(mydb), location);
     }
 
     private static String nearestBubble(ArrayList<PlaylistObject> playlists, Location location){

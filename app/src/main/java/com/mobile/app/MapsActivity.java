@@ -78,8 +78,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             mCircle = mMap.addCircle(new CircleOptions()
                     .center(selection)
                     .radius(Double.valueOf(circleLocation[2]))
-                    .strokeColor(Color.RED)
-                    .fillColor(Color.argb(70,255,0,0)));
+                    .strokeColor(Color.argb(90,200,0,200))
+                    .fillColor(Color.argb(70,200,0,200)));
         }
         else{
 
@@ -98,8 +98,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             mCircle = mMap.addCircle(new CircleOptions()
                     .center(selection)
                     .radius(50)
-                    .strokeColor(Color.RED)
-                    .fillColor(Color.argb(70,255,0,0)));
+                    .strokeColor(Color.argb(90,200,0,200))
+                    .fillColor(Color.argb(70,200,0,200)));
         }
 
         mMarker = mMap.addMarker(new MarkerOptions().position(selection).title("Center").draggable(true));
